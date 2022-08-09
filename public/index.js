@@ -1,7 +1,4 @@
 /*
-  -when spot is clicked, and choice is clicked then check to see
-    if the choice name matches the database name if the clicked coord
-    is within the box data in database
   -If database data matches, then gray out the character at the top
     -also change database found value to true
   -If database data doesn't match, then give message
@@ -35,7 +32,7 @@ const checkChoice = async (e, coordX, coordY) => {
   const docRef = doc(db, "game", "characters");
   const docSnap = await getDoc(docRef);
   const data = docSnap.data();
-
+  console.log(data);
 
   const left = data[targetName].box.left;
   const right = data[targetName].box.right;
@@ -44,13 +41,13 @@ const checkChoice = async (e, coordX, coordY) => {
 
   if (coordX > left && coordX < right && coordY > top && coordY < bottom) {
     console.log('found: ' + targetName);
-    handlePick(targetName, coordX, coordY);
+    handlePick(targetName, coordX, coordY, data);
   } else {
-    handlePick('wrong', coordX, coordY);
+    handlePick('wrong', coordX, coordY, data);
   }
 }
 
-const handlePick = (result, coordX, coordY) => {
+const handlePick = (result, coordX, coordY, data) => {
   if (result === 'wrong') {
     const errMsg = document.createElement('div');
     errMsg.style.display = "block";
@@ -64,11 +61,13 @@ const handlePick = (result, coordX, coordY) => {
     errMsg.style.backgroundColor = 'rgba(249, 249, 249, 0.7)';
     document.body.appendChild(errMsg);
     setTimeout(() => {
-      errMsg.style.display = 'none';
+      errMsg.remove();
     }, 3000);
   } else {
     const target = document.getElementById(result);
     target.style.opacity = 0.4;
+
+
 
     const corMsg = document.createElement('div');
     corMsg.style.display = "block";
@@ -82,7 +81,7 @@ const handlePick = (result, coordX, coordY) => {
     corMsg.style.backgroundColor = 'rgba(249, 249, 249, 0.7)';
     document.body.appendChild(corMsg);
     setTimeout(() => {
-      corMsg.style.display = 'none';
+      corMsg.remove();
     }, 3000);
   }
   const waldo = document.getElementById('waldo');
@@ -95,8 +94,9 @@ const handlePick = (result, coordX, coordY) => {
 }
 
 const endGame = () => {
-
+  console.log('win');
 }
+
 
 const displayChoices = (e) => {
   if (document.getElementById('choicesMenu').style.display == "block") {
@@ -110,23 +110,22 @@ const displayChoices = (e) => {
     menu.style.left = coordX + "px";
     menu.style.top = coordY + "px";
 
+
     document.getElementById('waldoChoice').addEventListener('click', (e) => {
       menu.style.display = "none";
       checkChoice(e, coordX, coordY);
-    });
+    }, { once: true });
     document.getElementById('odlawChoice').addEventListener('click', (e) => {
       menu.style.display = "none";
       checkChoice(e, coordX, coordY);
-    });
+    }, { once: true });
     document.getElementById('wizardChoice').addEventListener('click', (e) => {
       menu.style.display = "none";
       checkChoice(e, coordX, coordY);
-    });
-
-
-
+    }, { once: true });
   }
 }
+
 
 const hideMenu = (e) => {
   document.getElementById('choicesMenu').style.display = "none";
